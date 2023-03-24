@@ -1,0 +1,13 @@
+;Lab 4 ProgA 1
+;Map memory location $200 -> $300
+        LDA 	#$B 	;0xB => A !A is loop counter, list is 11 elements long
+    	LDX 	#$200 	;0x200 => X !X starts at address 200
+    	LDY    	#$300 	;0x300 => Y !Y starts at address 300
+LOOP:	LDB    	,X+ 	;M[X] => B, X++ ! load val @ X into B, then increment X
+    	STB    	,Y+ 	;B => M[Y], Y++ ! load val in B into address Y, then increment Y
+    	DECA     		;decrement A
+        BNE   	LOOP 	;if A != 0, branch to LOOP !A is loop counter, loop until counter = 0
+RETN:   JMP   	$D000 
+        .ORG 	$200 
+        FCB     0,1,2,3,4,5,6,7,8,9,$A 
+        END      

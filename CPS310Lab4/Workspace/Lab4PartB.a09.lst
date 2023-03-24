@@ -1,0 +1,49 @@
+0000                             ; Lab 4 ProgB
+0000                             ; Bubble Sort
+0000                             ; note: negative value is pushed out of list to the end
+0100                          .ORG   $100   ; @ address 0x100...
+0100   0B 03 08 07 01 09 FD 04 05 LIST:   FCB   11,3,8,7,1,9,-3,4,5   ; form list of constant vals
+0109                LSTEND:   RMB   2   ; advance location counter 2 bits
+010B                NVAL:     RMB   2   ; advance location counter 2 bits
+010D   10 8E 01 09  STRT:     LDY   #lstend   ; lstend -> Y
+0111   33 3F                  LEAU   -1,y   ; effective addr. of [Y - 1] -> U
+0113   FF 01 09               STU   lstend   ; U -> lstend                           ! list end holds list end - 1 on 1st pass
+0116   31 A9 FF 00            LEAY   -list,y   ; effective addr. of [Y - list] -> Y    ! Y is set to list length - 1, program runs for 8 loops
+011A   10 BF 01 0B            STY   nval   ; Y -> nval
+011E   31 3F                  LEAY   -1,y   ; effective addr. of [Y - 1] -> Y
+0120   8E 01 00     LOOP1:    LDX   #list   ; list -> X                             ! X is list pos counter. Set X at LIST
+0123                             ;comparing x to x + 1                                                       On later loops, line 14 is used as a RESET for X
+0123   A6 80        LOOP2:    LDA   ,x+   ; M[x] -> a, x+                         ! load current val to A and advance x
+0125   A1 84                  CMPA   ,x   ; compare a to m[x]
+0127   23 06                  BLS   next   ; if a <= m[x], branch to next          ! if curr val <= next val, we can move on
+0129                             ;Number Swapping Algorithm
+0129   E6 84                  LDB   ,x   ; else: m[x] -> b                       ! if we're here, we must be switching list elements first
+012B   A7 84                  STA   ,x   ; a -> M[x]                             ! curr val stored in next index
+012D   E7 1F                  STB   -1,x   ; b -> M[x-1]                           ! next val stored in curr index
+012F   BC 01 09     NEXT:     CMPX   lstend   ; compare x to m[lstend]                ! Carry bit will set if x < val at end of list
+0132   25 EF                  BLO   loop2   ; if carry is set branch to loop2       ! if x is less than our current list end index, loop back to sort routine
+0134   30 1F                  LEAX   -1,x   ; effective addr. of [X - 1] -> X       ! decrement x
+0136   BF 01 09               STX   lstend   ; x -> lstend                           ! set new list end to x
+0139   31 3F        XEND:     LEAY   -1,y   ; effective addr. of [Y - 1] -> Y       ! decrement y
+013B   26 E3                  BNE   loop1   ; if not equal branch to loop1          ! if y is not 0, we must continue looping
+013D   7E D0 00     RETN:     JMP   $D000   
+0140                          END      
+
+
+LIST:               0100 DEFINED AT LINE 5
+                    > USED AT LINE 11
+LSTEND:             0109 DEFINED AT LINE 6
+                    > USED AT LINE 10
+                    > USED AT LINE 23
+                    > USED AT LINE 26
+NVAL:               010B DEFINED AT LINE 7
+                    > USED AT LINE 12
+STRT:               010D DEFINED AT LINE 8
+LOOP1:              0120 DEFINED AT LINE 14
+                    > USED AT LINE 28
+LOOP2:              0123 DEFINED AT LINE 16
+                    > USED AT LINE 24
+NEXT:               012F DEFINED AT LINE 23
+                    > USED AT LINE 18
+XEND:               0139 DEFINED AT LINE 27
+RETN:               013D DEFINED AT LINE 29
